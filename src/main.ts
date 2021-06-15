@@ -1,5 +1,10 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 
+import Spawn from "Spawn"
+import Upgrader from "Creepers/Upgrader"
+import Constructor from "Creepers/Constructor"
+import Transporter from "Creepers/Transporter"
+
 declare global {
   /*
     Example types, expand on these or remove them and add your own.
@@ -32,12 +37,33 @@ declare global {
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
 export const loop = ErrorMapper.wrapLoop(() => {
-  console.log(`Current game tick is ${Game.time}`);
+  const memory = JSON.parse(RawMemory.get())
+
+  if (memory['creeps'] == undefined) { memory['creeps'] = {} }
 
   // Automatically delete memory of missing creeps
-  for (const name in Memory.creeps) {
-    if (!(name in Game.creeps)) {
-      delete Memory.creeps[name];
+  for (const name in memory['creeps']) {
+    if (!Game.creeps[name]) {
+      delete memory['creeps'][name]
     }
   }
+
+  for(const name in Game.spawns) {
+    let spawn = new Spawn(memory, Game.spawns[name])
+    spawn.createCreep()
+  }
+
+  for (const name in Game.creeps) {
+    let creep
+    let creepMemory = memory['creeps'][name]
+    switch (creepMemory.role) {
+      case 'upgrader': { creep = new Upgrader(memory, Game.creeps[name]); break }
+      case 'constructor': { creep = new Constructor(memory, Game.creeps[name]); break }
+      case 'transporter': { creep = new Transporter(memory, Game.creeps[name]); break }
+      //case 'harvester': { creep = new Harvester(memory, Game.creeps[name]); break }
+    }
+    if (creep) { creep.run() }
+  }
+
+  RawMemory.set(JSON.stringify(memory))
 });
