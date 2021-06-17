@@ -17,12 +17,15 @@ export default class Spawn extends ScreepObject {
       let upgraders = _.filter(creeps, function(c) { return memory['creeps'][c.name].role == 'upgrader' })
       let constructors = _.filter(creeps, function(c) { return memory['creeps'][c.name].role == 'constructor' })
       let transporters = _.filter(creeps, function(c) { return memory['creeps'][c.name].role == 'transporter' })
+      let repairers = _.filter(creeps, function(c) { return memory['creeps'][c.name].role == 'repairer' })
       if (upgraders.length == 0) {
         this.spawnUpgrader()
       } else if (transporters.length < sources.length) {
         this.spawnTransporter()
       } else if (constructors.length < sources.length * 2) {
         this.spawnConstructor()
+      } else if (repairers.length < sources.length) {
+        this.spawnRepairer()
       }
     }
   }
@@ -70,6 +73,18 @@ export default class Spawn extends ScreepObject {
     let constructor_source:any = _.sample(constructor_sources)
     let source = constructor_source.id
     let attrs = { role: 'constructor', task: 'harvesting', source: source }
+    this.spawnCreep(body, attrs)
+  }
+
+  spawnRepairer(): void {
+    let body = [MOVE, MOVE, CARRY, CARRY, WORK]
+    let memory = this.memory
+    let creeps = this.spawn.room.find(FIND_MY_CREEPS)
+    let sources = this.spawn.room.find(FIND_SOURCES)
+    let repairer_sources:any = _.reject(sources, function(s) { return _.filter(creeps, function(c){ return memory['creeps'][c.name].role == 'repairer' && memory['creeps'][c.name]['source'] == s.id }).length > 2 })
+    let repairer_source:any = _.sample(repairer_sources)
+    let source = repairer_source.id
+    let attrs = { role: 'repairer', task: 'harvesting', source: source }
     this.spawnCreep(body, attrs)
   }
 }

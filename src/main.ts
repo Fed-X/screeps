@@ -4,6 +4,7 @@ import Spawn from "Spawn"
 import Upgrader from "Creepers/Upgrader"
 import Constructor from "Creepers/Constructor"
 import Transporter from "Creepers/Transporter"
+import Repairer from "Creepers/Repairer"
 
 declare global {
   /*
@@ -60,7 +61,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       case 'upgrader': { creep = new Upgrader(memory, Game.creeps[name]); break }
       case 'constructor': { creep = new Constructor(memory, Game.creeps[name]); break }
       case 'transporter': { creep = new Transporter(memory, Game.creeps[name]); break }
-      //case 'harvester': { creep = new Harvester(memory, Game.creeps[name]); break }
+      case 'repairer': { creep = new Repairer(memory, Game.creeps[name]); break }
     }
     if (creep) { creep.run() }
   }
