@@ -37,10 +37,6 @@ export default class Transporter extends Creeper {
             creepMemory.task = 'filling'
             creepMemory.target = undefined
           }
-        } else {
-          creepMemory.role = 'upgrader'
-          creepMemory.task = 'filling'
-          creepMemory.target = undefined
         }
         break
       }
