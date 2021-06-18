@@ -31,6 +31,7 @@ export default class Repairer extends Creeper {
         let target:any = Game.getObjectById(creepMemory.target)
         if (target) {
           if (creep.repair(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
+          if (target.hits == target.hitsMax) { creepMemory.target = undefined }
           if (creep.carry[RESOURCE_ENERGY] == 0) {
             creepMemory.task = 'filling'
             creepMemory.target = undefined

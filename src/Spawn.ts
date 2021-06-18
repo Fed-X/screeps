@@ -23,15 +23,15 @@ export default class Spawn extends ScreepObject {
       let upgraders = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'upgrader' })
       let transportAvailable = harvesters.length > 0 && transporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
 
-      if (harvesters.length < sources.length) {             // One stationary harvester per source
+      if (harvesters.length < sources.length) {               // One stationary harvester per source
         this.spawnHarvester(transportAvailable)
-      } else if (transporters.length < 1) {                 // Single transporter for now
+      } else if (transporters.length < 1) {                   // Single transporter for now
         this.spawnTransporter(transportAvailable)
-      } else if (constructors.length < sources.length) {    // One constructor per source.. needs balancing
+      } else if (constructors.length < sources.length * 2) {  // Build some amount of constructors per source.. needs balancing
         this.spawnConstructor(transportAvailable)
-      } else if (repairers.length < 1) {                    // Single repairer for now
+      } else if (repairers.length < 1) {                      // Single repairer for now
         this.spawnRepairer(transportAvailable)
-      } else if (upgraders.length < sources.length) {       // One upgrader per source.. needs balancing
+      } else if (upgraders.length < sources.length * 2) {     // Build some amount of upgraders per source.. needs balancing
         this.spawnUpgrader(transportAvailable)
       }
     }
