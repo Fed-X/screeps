@@ -5,6 +5,7 @@ export default class Constructor extends Creeper {
     let creep = this.creep
     let creepMemory = this.memory['creeps'][creep.name]
     switch (creepMemory.task) {
+      // Withdraw energy from largest container
       case 'filling': {
         if (!creepMemory.target) {
           const target = _.max(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } }), (container:any) => container.store[RESOURCE_ENERGY])
@@ -19,8 +20,10 @@ export default class Constructor extends Creeper {
         }
         break
       }
+
+      // Transport energy to build sites by largest first. Convert into upgrader if none available.
       case 'constructing': {
-        if (!creepMemory.target) {
+        if (!creepMemory.target || !Game.getObjectById(creepMemory.target)) {
           let targets:any = _.sortBy(creep.room.find(FIND_MY_CONSTRUCTION_SITES), function(s:any){ return -s.progressTotal })
           if (targets.length > 0) { creepMemory.target = targets[0].id }
         }

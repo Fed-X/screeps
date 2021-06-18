@@ -50,11 +50,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
+  // Create new creeps
   for(const name in Game.spawns) {
     let spawn = new Spawn(memory, Game.spawns[name])
     spawn.createCreep()
   }
 
+  // Create and run creep instances
   for (const name in Game.creeps) {
     let creep
     let creepMemory = memory['creeps'][name]

@@ -5,6 +5,7 @@ export default class Transporter extends Creeper {
     let creep = this.creep
     let creepMemory = this.memory['creeps'][creep.name]
     switch (creepMemory.task) {
+      // Withdraw energy from largest container
       case 'filling': {
         if (!creepMemory.target) {
           const target = _.max(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } }), (container:any) => container.store[RESOURCE_ENERGY])
@@ -19,6 +20,8 @@ export default class Transporter extends Creeper {
         }
         break
       }
+
+      // Transport energy to needed structures
       case 'transporting': {
         if (!creepMemory.target) {
           let extensions = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_EXTENSION } }), function(struct:any){ return struct.energy < struct.energyCapacity })

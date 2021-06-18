@@ -5,6 +5,7 @@ export default class Repairer extends Creeper {
     let creep = this.creep
     let creepMemory = this.memory['creeps'][creep.name]
     switch (creepMemory.task) {
+      // Withdraw energy from largest container
       case 'filling': {
         if (!creepMemory.target) {
           const target = _.max(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } }), (container:any) => container.store[RESOURCE_ENERGY])
@@ -19,6 +20,8 @@ export default class Repairer extends Creeper {
         }
         break
       }
+
+      // Repair structures by largest difference in hp. Will definitely need more intelligent filtering.
       case 'repairing': {
         if (!creepMemory.target) {
           let targets:any = creep.room.find(FIND_STRUCTURES, { filter: object => object.hits < object.hitsMax });

@@ -5,6 +5,7 @@ export default class Upgrader extends Creeper {
     let creep = this.creep
     let creepMemory = this.memory['creeps'][creep.name]
     switch (creepMemory.task) {
+      // Withdraw energy from largest container
       case 'filling': {
         if (!creepMemory.target) {
           const target = _.max(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } }), (container:any) => container.store[RESOURCE_ENERGY])
@@ -19,6 +20,8 @@ export default class Upgrader extends Creeper {
         }
         break
       }
+
+      // Upgrade room controller
       case 'upgrading': {
         let target:any = creep.room.controller
         if (creep.upgradeController(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
