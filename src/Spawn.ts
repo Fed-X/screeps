@@ -8,6 +8,16 @@ export default class Spawn extends ScreepObject {
     this.spawn = spawn
   }
 
+  // Renew nearby creeps
+  renewCreeps(): void {
+    let memory = this.memory
+    let spawn = this.spawn
+    let creeps = spawn.room.find(FIND_MY_CREEPS)
+
+    let renewals = _.filter(creeps, c => memory['creeps'][c.name]?.task == 'renewing' && spawn.pos.getRangeTo(c) == 1)
+    if (renewals.length > 0) { spawn.renewCreep(renewals[0]) }
+  }
+
   // Spawn new creep if applicable
   // Needs further testing and balancing
   createCreep(): void {
@@ -18,15 +28,21 @@ export default class Spawn extends ScreepObject {
       let sources = this.spawn.room.find(FIND_SOURCES)
       let harvesters = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'harvester' })
       let transporters = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'transporter' })
+      let spawnTransporters = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'spawnTransporter' })
       let constructors = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'constructor' })
+      let maintainers = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'maintainer' })
       let repairers = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'repairer' })
       let upgraders = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'upgrader' })
-      let transportAvailable = harvesters.length > 0 && transporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
+      let transportAvailable = harvesters.length > 0 && spawnTransporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
 
       if (harvesters.length < sources.length) {               // One stationary harvester per source
         this.spawnHarvester(transportAvailable)
-      } else if (transporters.length < 1) {                   // Single transporter for now
+      } else if (spawnTransporters.length < 1) {              // Single spawn / extension transporter
+        this.spawnExtensionTransporter(transportAvailable)
+      } else if (transporters.length < 1) {                   // Single transporter for all other structures
         this.spawnTransporter(transportAvailable)
+      } else if (maintainers.length < 1) {                    // Single maintainer for now
+        this.spawnMaintainer(transportAvailable)
       } else if (repairers.length < 1) {                      // Single repairer for now
         this.spawnRepairer(transportAvailable)
       } else if (constructors.length < sources.length * 2) {  // Build some amount of constructors per source.. needs balancing
@@ -69,7 +85,23 @@ export default class Spawn extends ScreepObject {
     }
   }
 
-  // Transporter: Responsible for refilling energy (extensions, towers, storage, etc.)
+  // SpawnTransporter: Responsible for refilling spawn energy
+  spawnExtensionTransporter(transportAvailable: boolean): void {
+    let body:any = []
+    if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
+      body = [MOVE, MOVE, MOVE, CARRY, CARRY, CARRY]
+    } else if (this.spawn.room.energyAvailable >= 400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 450 : this.spawn.room.energyAvailable < 450)) {
+      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY]
+    } else if (this.spawn.room.energyAvailable >= 500) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY]
+    }
+    if (body.length > 0) {
+      let attrs = { role: 'spawnTransporter', task: 'filling' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  // Transporter: Responsible for refilling energy (towers, storage, etc.)
   spawnTransporter(transportAvailable: boolean): void {
     let body:any = []
     if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
@@ -107,7 +139,29 @@ export default class Spawn extends ScreepObject {
     }
   }
 
-  // Repairer: Responsible for structures that require upkeep
+  // Maintainer: Responsible for repairing roads and containers
+  spawnMaintainer(transportAvailable: boolean): void {
+    let body:any = []
+    if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
+      body = [MOVE, MOVE, CARRY, CARRY, WORK]
+    } else if (this.spawn.room.energyAvailable >= 350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 400 : this.spawn.room.energyAvailable < 400)) {
+      body = [MOVE, MOVE, MOVE, CARRY, CARRY, WORK]
+    } else if (this.spawn.room.energyAvailable >= 400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 450 : this.spawn.room.energyAvailable < 450)) {
+      body = [MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK]
+    } else if (this.spawn.room.energyAvailable >= 450 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 500 : this.spawn.room.energyAvailable < 500)) {
+      body = [MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 500 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 550 : this.spawn.room.energyAvailable < 550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 550) {
+      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK, WORK]
+    }
+    if (body.length > 0) {
+      let attrs = { role: 'maintainer', task: 'filling' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  // Repairer: Responsible for repairing walls and ramparts
   spawnRepairer(transportAvailable: boolean): void {
     let body:any = []
     if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {

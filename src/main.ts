@@ -3,9 +3,11 @@ import { ErrorMapper } from "utils/ErrorMapper";
 import Spawn from "Spawn"
 import Upgrader from "Creepers/Upgrader"
 import Constructor from "Creepers/Constructor"
+import SpawnTransporter from "Creepers/SpawnTransporter"
 import Transporter from "Creepers/Transporter"
-import Repairer from "Creepers/Repairer"
 import Harvester from "Creepers/Harvester"
+import Maintainer from "Creepers/Maintainer"
+import Repairer from "Creepers/Repairer"
 
 declare global {
   /*
@@ -50,10 +52,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  // Create new creeps
+  // Create and renew creeps
   for(const name in Game.spawns) {
     let spawn = new Spawn(memory, Game.spawns[name])
     spawn.createCreep()
+    spawn.renewCreeps()
   }
 
   // Create and run creep instances
@@ -62,12 +65,26 @@ export const loop = ErrorMapper.wrapLoop(() => {
     let creepMemory = memory['creeps'][name]
     switch (creepMemory?.role) {
       case 'harvester': { creep = new Harvester(memory, Game.creeps[name]); break }
+      case 'spawnTransporter': { creep = new SpawnTransporter(memory, Game.creeps[name]); break }
       case 'transporter': { creep = new Transporter(memory, Game.creeps[name]); break }
       case 'upgrader': { creep = new Upgrader(memory, Game.creeps[name]); break }
       case 'constructor': { creep = new Constructor(memory, Game.creeps[name]); break }
       case 'repairer': { creep = new Repairer(memory, Game.creeps[name]); break }
+      case 'maintainer': { creep = new Repairer(memory, Game.creeps[name]); break }
     }
     if (creep) { creep.run() }
+  }
+
+  // Run room functions
+  for(const name in Game.rooms) {
+    let room = Game.rooms[name]
+    let towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } })
+    _.each(towers, (tower: StructureTower) => {
+      let enemies = room.find(FIND_HOSTILE_CREEPS)
+      if (enemies.length > 0) {
+        tower.attack(enemies[0])
+      }
+    })
   }
 
   RawMemory.set(JSON.stringify(memory))
