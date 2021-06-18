@@ -24,8 +24,7 @@ export default class Repairer extends Creeper {
       // Repair structures by largest difference in hp. Will definitely need more intelligent filtering.
       case 'repairing': {
         if (!creepMemory.target) {
-          let targets:any = creep.room.find(FIND_STRUCTURES, { filter: object => object.hits < object.hitsMax });
-          targets.sort((a:any,b:any) => a.hits - b.hits);
+          let targets:any = _.sortBy(creep.room.find(FIND_STRUCTURES, { filter: s => s.hits < s.hitsMax && s.hits / s.hitsMax < 0.75 }), s => s.hits)
           if (targets.length > 0) { creepMemory.target = targets[0].id }
         }
         let target:any = Game.getObjectById(creepMemory.target)
@@ -37,7 +36,9 @@ export default class Repairer extends Creeper {
             creepMemory.target = undefined
           }
         } else {
-          creep.suicide()
+          if (!creepMemory.target) { creepMemory.target = undefined }
+          const spawns = creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } })
+          creep.moveTo(spawns[0])
         }
         break
       }

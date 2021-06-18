@@ -35,9 +35,24 @@ export default class Constructor extends Creeper {
             creepMemory.target = undefined
           }
         } else {
-          creepMemory.role = 'upgrader'
-          creepMemory.task = 'filling'
+          creepMemory.task = 'upgrading'
           creepMemory.target = undefined
+        }
+        break
+      }
+
+      // Upgrade room controller
+      case 'upgrading': {
+        let targets:any = _.sortBy(creep.room.find(FIND_MY_CONSTRUCTION_SITES), function(s:any){ return -s.progressTotal })
+        if (targets.length > 0) {
+          creepMemory.task = 'constructing'
+          creepMemory.target = targets[0].id
+        } else {
+          let target:any = creep.room.controller
+          if (creep.upgradeController(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
+          if (creep.carry[RESOURCE_ENERGY] == 0) {
+            creepMemory.task = 'filling'
+          }
         }
         break
       }

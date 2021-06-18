@@ -24,12 +24,15 @@ export default class Transporter extends Creeper {
       // Transport energy to needed structures
       case 'transporting': {
         if (!creepMemory.target) {
-          let extensions = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_EXTENSION } }), function(struct:any){ return struct.energy < struct.energyCapacity })
-          let spawns = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } }), function(struct:any){ return struct.energy < struct.energyCapacity })
-          if (extensions.length > 0) {
-            creepMemory.target = extensions[0].id
-          } else if (spawns.length > 0) {
+          let spawns = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } }), function(struct:any){ return struct.energy < struct.energyCapacity })
+          let extensions = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_EXTENSION } }), function(struct:any){ return struct.energy < struct.energyCapacity })
+          let towers = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } }), function(struct:any){ return struct.energy < struct.energyCapacity })
+          if (spawns.length > 0) {
             creepMemory.target = spawns[0].id
+          } else if (extensions.length > 0) {
+            creepMemory.target = extensions[0].id
+          } else if (towers.length > 0) {
+            creepMemory.target = towers[0].id
           }
         }
         let target:any = Game.getObjectById(creepMemory.target)
