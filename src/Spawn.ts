@@ -23,11 +23,11 @@ export default class Spawn extends ScreepObject {
         this.spawnHarvester()
       } else if (transporters.length < 1) {
         this.spawnTransporter()
-      } else if (constructors.length < sources.length * 2) {
+      } else if (constructors.length < sources.length) {
         this.spawnConstructor()
       } else if (repairers.length < 1) {
         this.spawnRepairer()
-      } else if (upgraders.length < sources.length * 2) {
+      } else if (upgraders.length < sources.length) {
         this.spawnUpgrader()
       }
     }
