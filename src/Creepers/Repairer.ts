@@ -37,9 +37,7 @@ export default class Repairer extends Creeper {
             creepMemory.target = undefined
           }
         } else {
-          creepMemory.role = 'upgrader'
-          creepMemory.task = 'filling'
-          creepMemory.target = undefined
+          creep.suicide()
         }
         break
       }
