@@ -6,17 +6,23 @@ export default class Transporter extends Creeper {
     let creepMemory = this.memory['creeps'][creep.name]
     switch (creepMemory.task) {
       case 'filling': {
-        let target:any = Game.getObjectById(creepMemory.source)
-        if (creep.harvest(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
+        if (!creepMemory.target) {
+          const target = _.max(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } }), (container:any) => container.store[RESOURCE_ENERGY])
+          creepMemory.target = target.id
+        }
+
+        let target:any = Game.getObjectById(creepMemory.target)
+        if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
         if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
           creepMemory.task = 'transporting'
+          creepMemory.target = undefined
         }
         break
       }
       case 'transporting': {
         if (!creepMemory.target) {
-          let extensions = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_EXTENSION } }), function(struct:any){ return struct.energy < struct.energyCapacity })
-          let spawns = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } }), function(struct:any){ return struct.energy < struct.energyCapacity })
+          let extensions = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_EXTENSION } }), function(struct:any){ return struct.energy < struct.energyCapacity })
+          let spawns = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } }), function(struct:any){ return struct.energy < struct.energyCapacity })
           if (extensions.length > 0) {
             creepMemory.target = extensions[0].id
           } else if (spawns.length > 0) {
@@ -33,13 +39,8 @@ export default class Transporter extends Creeper {
           }
         } else {
           creepMemory.role = 'upgrader'
-          creepMemory.task = 'harvesting'
+          creepMemory.task = 'filling'
           creepMemory.target = undefined
-          let controller = creep.room.controller
-          if (controller) {
-            let source = controller.pos.findClosestByPath(FIND_SOURCES)
-            if (source) { creepMemory.source = source.id }
-          }
         }
         break
       }

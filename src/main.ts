@@ -5,6 +5,7 @@ import Upgrader from "Creepers/Upgrader"
 import Constructor from "Creepers/Constructor"
 import Transporter from "Creepers/Transporter"
 import Repairer from "Creepers/Repairer"
+import Harvester from "Creepers/Harvester"
 
 declare global {
   /*
@@ -57,10 +58,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
   for (const name in Game.creeps) {
     let creep
     let creepMemory = memory['creeps'][name]
-    switch (creepMemory.role) {
+    switch (creepMemory['role']) {
+      case 'harvester': { creep = new Harvester(memory, Game.creeps[name]); break }
+      case 'transporter': { creep = new Transporter(memory, Game.creeps[name]); break }
       case 'upgrader': { creep = new Upgrader(memory, Game.creeps[name]); break }
       case 'constructor': { creep = new Constructor(memory, Game.creeps[name]); break }
-      case 'transporter': { creep = new Transporter(memory, Game.creeps[name]); break }
       case 'repairer': { creep = new Repairer(memory, Game.creeps[name]); break }
     }
     if (creep) { creep.run() }
