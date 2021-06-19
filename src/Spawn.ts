@@ -35,20 +35,18 @@ export default class Spawn extends ScreepObject {
       let upgraders = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'upgrader' })
       let transportAvailable = harvesters.length > 0 && spawnTransporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
 
-      if (harvesters.length < sources.length) {             // One stationary harvester per source
+      if (harvesters.length < sources.length) {               // One stationary harvester per source
         this.spawnHarvester(transportAvailable)
-      } else if (spawnTransporters.length < 1) {            // Single spawn / extension transporter
+      } else if (spawnTransporters.length < 1) {              // Single spawn / extension transporter
         this.spawnExtensionTransporter(transportAvailable)
-      } else if (transporters.length < 1) {                 // Single transporter for all other structures
+      } else if (transporters.length < 1) {                   // Single transporter for all other structures
         this.spawnTransporter(transportAvailable)
-      } else if (maintainers.length < 1) {                  // Single maintainer for now
+      } else if (maintainers.length < 1) {                    // Single maintainer
         this.spawnMaintainer(transportAvailable)
-      } else if (repairers.length < 1) {                    // Single repairer for now
+      } else if (repairers.length < 1) {                      // Single repairer
         this.spawnRepairer(transportAvailable)
-      } else if (constructors.length < sources.length) {    // Build some amount of constructors per source.. needs balancing
+      } else if (constructors.length < sources.length * 3) {  // Two constructors per source
         this.spawnConstructor(transportAvailable)
-      } else if (upgraders.length < sources.length) {       // Build some amount of upgraders per source.. needs balancing
-        this.spawnUpgrader(transportAvailable)
       }
     }
   }
@@ -125,7 +123,7 @@ export default class Spawn extends ScreepObject {
     }
   }
 
-  // Constructor: Transports energy to build sites, converts into upgrader if none available.
+  // Constructor: Transports energy to build sites, falls back to upgrading if none available.
   spawnConstructor(transportAvailable: boolean): void {
     let body:any = []
     if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
