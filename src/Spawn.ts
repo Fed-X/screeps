@@ -70,8 +70,16 @@ export default class Spawn extends ScreepObject {
       body = [MOVE, WORK, WORK, WORK]
     } else if (this.spawn.room.energyAvailable >= 450 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 550 : this.spawn.room.energyAvailable < 550)) {
       body = [MOVE, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 550) {
+    } else if (this.spawn.room.energyAvailable >= 550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 600 : this.spawn.room.energyAvailable < 600)) {
       body = [MOVE, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 600 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 650 : this.spawn.room.energyAvailable < 650)) {
+      body = [MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 650 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 700 : this.spawn.room.energyAvailable < 700)) {
+      body = [MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 700 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 750 : this.spawn.room.energyAvailable < 750)) {
+      body = [MOVE, MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 750) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]
     }
     if (body.length > 0) {
       let memory = this.memory
