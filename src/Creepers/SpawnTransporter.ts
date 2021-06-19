@@ -13,12 +13,15 @@ export default class SpawnTransporter extends Creeper {
       // Withdraw energy from largest container
       case 'filling': {
         if (!creepMemory.target) {
-          const target = _.max(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } }), (container:any) => container.store[RESOURCE_ENERGY])
+          let target:any = _.sortBy(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } }), (container:any) => -container.store[RESOURCE_ENERGY])[0]
+          if (!target) {
+            target = _.sortBy(creep.room.find(FIND_DROPPED_RESOURCES, { filter: { resourceType: RESOURCE_ENERGY } }), (resource:any) => -resource.amount)[0]
+          }
           creepMemory.target = target.id
         }
 
         let target:any = Game.getObjectById(creepMemory.target)
-        if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
+        if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE || creep.pickup(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
         if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
           creepMemory.task = 'transporting'
           creepMemory.target = undefined

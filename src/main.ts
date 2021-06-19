@@ -70,7 +70,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       case 'upgrader': { creep = new Upgrader(memory, Game.creeps[name]); break }
       case 'constructor': { creep = new Constructor(memory, Game.creeps[name]); break }
       case 'repairer': { creep = new Repairer(memory, Game.creeps[name]); break }
-      case 'maintainer': { creep = new Repairer(memory, Game.creeps[name]); break }
+      case 'maintainer': { creep = new Maintainer(memory, Game.creeps[name]); break }
     }
     if (creep) { creep.run() }
   }

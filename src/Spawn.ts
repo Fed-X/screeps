@@ -45,7 +45,9 @@ export default class Spawn extends ScreepObject {
         this.spawnMaintainer(transportAvailable)
       } else if (repairers.length < 1) {                      // Single repairer
         this.spawnRepairer(transportAvailable)
-      } else if (constructors.length < sources.length * 2) {  // Two constructors per source
+      } else if (upgraders.length < sources.length) {         // Single upgrader per source
+        this.spawnUpgrader(transportAvailable)
+      } else if (constructors.length < sources.length) {      // Single constructor per source
         this.spawnConstructor(transportAvailable)
       }
     }
