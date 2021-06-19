@@ -15,7 +15,7 @@ export default class Repairer extends Creeper {
           creepMemory.target = target.id
         }
 
-        let target:any = Game.getObjectById(creepMemory.target)
+        let target:any = Game.getObjectById(creepMemory.target); if (target == null) { creepMemory.target = undefined }
         if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE || creep.pickup(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
         if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
           creepMemory.task = 'repairing'
@@ -39,6 +39,7 @@ export default class Repairer extends Creeper {
             creepMemory.target = undefined
           }
         } else {
+          creepMemory.target = undefined
           const spawns = creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } })
           creep.moveTo(spawns[0])
         }

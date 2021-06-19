@@ -15,7 +15,7 @@ export default class Upgrader extends Creeper {
           creepMemory.target = target.id
         }
 
-        let target:any = Game.getObjectById(creepMemory.target)
+        let target:any = Game.getObjectById(creepMemory.target); if (target == null) { creepMemory.target = undefined }
         if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE || creep.pickup(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
         if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
           creepMemory.task = 'upgrading'

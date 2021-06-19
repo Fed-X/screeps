@@ -15,7 +15,7 @@ export default class Transporter extends Creeper {
           creepMemory.target = target.id
         }
 
-        let target:any = Game.getObjectById(creepMemory.target)
+        let target:any = Game.getObjectById(creepMemory.target); if (target == null) { creepMemory.target = undefined }
         if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE || creep.pickup(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
         if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
           creepMemory.task = 'transporting'
@@ -28,7 +28,7 @@ export default class Transporter extends Creeper {
       case 'transporting': {
         if (!creepMemory.target) {
           let towers = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } }), function(struct:any){ return struct.energy < struct.energyCapacity })
-          let storage = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_STORAGE } }), function(struct:any){ return struct.energy < struct.energyCapacity })
+          let storage = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_STORAGE } }), function(struct:any){ return struct.store[RESOURCE_ENERGY] < struct.store.getCapacity() })
           let spawns = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } }), function(struct:any){ return struct.energy < struct.energyCapacity })
           let extensions = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_EXTENSION } }), function(struct:any){ return struct.energy < struct.energyCapacity })
           if (towers.length > 0) {
@@ -49,6 +49,8 @@ export default class Transporter extends Creeper {
             creepMemory.task = 'filling'
             creepMemory.target = undefined
           }
+        } else {
+          creepMemory.target = undefined
         }
         break
       }
