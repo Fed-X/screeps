@@ -72,6 +72,11 @@ export default class SpawnTransporter extends Creeper {
         if (creep.ticksToLive > 1000) { creepMemory.task = 'filling' }
         break
       }
+
+      default: {
+        creepMemory.task = 'filling'
+        creepMemory.target = undefined
+      }
     }
   }
 }

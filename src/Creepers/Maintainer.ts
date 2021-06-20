@@ -55,6 +55,11 @@ export default class Maintainer extends Creeper {
         }
         break
       }
+
+      default: {
+        creepMemory.task = 'filling'
+        creepMemory.target = undefined
+      }
     }
   }
 }

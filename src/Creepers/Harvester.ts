@@ -30,6 +30,11 @@ export default class Harvester extends Creeper {
         }
         break
       }
+
+      default: {
+        creepMemory.task = 'harvesting'
+        creepMemory.target = undefined
+      }
     }
   }
 }
