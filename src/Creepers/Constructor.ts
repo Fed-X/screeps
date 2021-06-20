@@ -21,13 +21,13 @@ export default class Constructor extends Creeper {
           if (result == ERR_NOT_IN_RANGE)         { creep.moveTo(target) }
           if (result == ERR_NOT_ENOUGH_RESOURCES) { creepMemory.target = undefined }
           if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
-            creepMemory.task = 'transporting'
+            creepMemory.task = 'constructing'
             creepMemory.target = undefined
           }
         } else {
           if (creep.pickup(target) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
           if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
-            creepMemory.task = 'transporting'
+            creepMemory.task = 'constructing'
             creepMemory.target = undefined
           }
         }
