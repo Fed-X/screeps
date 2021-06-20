@@ -8,11 +8,10 @@ export default class Maintainer extends Creeper {
       // Withdraw energy from largest container
       case 'filling': {
         if (!creepMemory.target) {
-          let target:any = _.sortBy(creep.room.find(FIND_STRUCTURES, { filter: s => s.structureType == STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0 }), (container:any) => -container.store[RESOURCE_ENERGY])[0]
-          if (!target) {
-            target = _.sortBy(creep.room.find(FIND_DROPPED_RESOURCES, { filter: { resourceType: RESOURCE_ENERGY } }), (resource:any) => -resource.amount)[0]
-          }
-          creepMemory.target = target.id
+          let resources: any[] = creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } })
+          resources = resources.concat(creep.room.find(FIND_DROPPED_RESOURCES, { filter: { resourceType: RESOURCE_ENERGY } }))
+          let target:any = _.sortBy(resources, (resource:any) => resource instanceof Resource ? -resource.amount : -resource.store[RESOURCE_ENERGY])[0]
+          if (target) { creepMemory.target = target.id }
         }
 
         let target:any = Game.getObjectById(creepMemory.target); if (target == null) { creepMemory.target = undefined }
