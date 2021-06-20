@@ -39,16 +39,16 @@ export default class Spawn extends ScreepObject {
         this.spawnHarvester(transportAvailable)
       } else if (spawnTransporters.length < 1) {              // Single spawn / extension transporter
         this.spawnExtensionTransporter(transportAvailable)
-      } else if (transporters.length < 1) {                   // Single transporter for all other structures
-        this.spawnTransporter(transportAvailable)
+      } else if (constructors.length < sources.length) {      // Single constructor per source
+        this.spawnConstructor(transportAvailable)
+      } else if (upgraders.length < sources.length) {         // Single upgrader per source
+        this.spawnUpgrader(transportAvailable)
       } else if (maintainers.length < 1) {                    // Single maintainer
         this.spawnMaintainer(transportAvailable)
       } else if (repairers.length < 1) {                      // Single repairer
         this.spawnRepairer(transportAvailable)
-      } else if (upgraders.length < sources.length) {         // Single upgrader per source
-        this.spawnUpgrader(transportAvailable)
-      } else if (constructors.length < sources.length) {      // Single constructor per source
-        this.spawnConstructor(transportAvailable)
+      } else if (transporters.length < 1) {                   // Single transporter for all other structures
+        this.spawnTransporter(transportAvailable)
       }
     }
   }

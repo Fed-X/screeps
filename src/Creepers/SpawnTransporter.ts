@@ -4,8 +4,7 @@ export default class SpawnTransporter extends Creeper {
   run(): void {
     let creep = this.creep
     let creepMemory = this.memory['creeps'][creep.name]
-    // @ts-ignore
-    if (creep.ticksToLive < 100) {
+    if (creep.ticksToLive != undefined && creep.ticksToLive < 100) {
       creepMemory.task = 'renewing'
       creepMemory.target = undefined
     }
@@ -67,8 +66,7 @@ export default class SpawnTransporter extends Creeper {
       case 'renewing': {
         const spawns = creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } })
         creep.moveTo(spawns[0])
-        // @ts-ignore
-        if (creep.ticksToLive > 1000) { creepMemory.task = 'filling' }
+        if (creep.ticksToLive != undefined && creep.ticksToLive > 1000) { creepMemory.task = 'filling' }
         break
       }
 
