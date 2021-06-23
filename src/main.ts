@@ -8,6 +8,7 @@ import Transporter from "Creepers/Transporter"
 import Harvester from "Creepers/Harvester"
 import Maintainer from "Creepers/Maintainer"
 import Repairer from "Creepers/Repairer"
+import Attacker from "Creepers/Attacker"
 
 declare global {
   /*
@@ -53,7 +54,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   // Create and renew creeps
-  for(const name in Game.spawns) {
+  for (const name in Game.spawns) {
     let spawn = new Spawn(memory, Game.spawns[name])
     spawn.createCreep()
     spawn.renewCreeps()
@@ -71,12 +72,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
       case 'constructor': { creep = new Constructor(memory, Game.creeps[name]); break }
       case 'repairer': { creep = new Repairer(memory, Game.creeps[name]); break }
       case 'maintainer': { creep = new Maintainer(memory, Game.creeps[name]); break }
+      case 'attacker': { creep = new Attacker(memory, Game.creeps[name]); break }
     }
     if (creep) { creep.run() }
   }
 
   // Run room functions
-  for(const name in Game.rooms) {
+  for (const name in Game.rooms) {
     let room = Game.rooms[name]
     let towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } })
     _.each(towers, (tower: StructureTower) => {

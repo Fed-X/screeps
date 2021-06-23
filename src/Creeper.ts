@@ -7,4 +7,8 @@ export default class Creeper extends ScreepObject {
     super(memory)
     this.creep = creep
   }
+
+  moveTo(target: RoomPosition): void {
+    this.creep.moveTo(target, {ignoreCreeps:true})
+  }
 }

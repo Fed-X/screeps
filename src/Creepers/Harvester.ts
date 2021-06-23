@@ -2,6 +2,7 @@ import Creeper from "../Creeper"
 
 export default class Harvester extends Creeper {
   run(): void {
+    let self = this
     let creep = this.creep
     let creepMemory = this.memory['creeps'][creep.name]
     switch (creepMemory.task) {
@@ -23,7 +24,7 @@ export default class Harvester extends Creeper {
         if ('position' in creepMemory) { 
           const position = new RoomPosition(creepMemory.position.x, creepMemory.position.y, creepMemory.position.name)
           if (creep.pos.x != position.x || creep.pos.y != position.y) {
-            creep.moveTo(position)
+            self.moveTo(position)
           } else {
             creep.harvest(source)
           }
