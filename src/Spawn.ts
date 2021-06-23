@@ -191,8 +191,16 @@ export default class Spawn extends ScreepObject {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
     } else if (this.spawn.room.energyAvailable >= 1250 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1300 : this.spawn.room.energyAvailable < 1300)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1300) {
+    } else if (this.spawn.room.energyAvailable >= 1300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1350 : this.spawn.room.energyAvailable < 1350)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1400 : this.spawn.room.energyAvailable < 1400)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1700) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK]
     }
     if (body.length > 0) {
       let attrs = { role: 'constructor', task: 'filling' }
@@ -243,8 +251,16 @@ export default class Spawn extends ScreepObject {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
     } else if (this.spawn.room.energyAvailable >= 1250 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1300 : this.spawn.room.energyAvailable < 1300)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1300) {
+    } else if (this.spawn.room.energyAvailable >= 1300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1350 : this.spawn.room.energyAvailable < 1350)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1400 : this.spawn.room.energyAvailable < 1400)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1700) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK]
     }
     if (body.length > 0) {
       let attrs = { role: 'maintainer', task: 'filling' }
@@ -295,8 +311,16 @@ export default class Spawn extends ScreepObject {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
     } else if (this.spawn.room.energyAvailable >= 1250 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1300 : this.spawn.room.energyAvailable < 1300)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1300) {
+    } else if (this.spawn.room.energyAvailable >= 1300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1350 : this.spawn.room.energyAvailable < 1350)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1400 : this.spawn.room.energyAvailable < 1400)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1700) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK]
     }
     if (body.length > 0) {
       let attrs = { role: 'repairer', task: 'filling' }
@@ -347,8 +371,16 @@ export default class Spawn extends ScreepObject {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
     } else if (this.spawn.room.energyAvailable >= 1250 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1300 : this.spawn.room.energyAvailable < 1300)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1300) {
+    } else if (this.spawn.room.energyAvailable >= 1300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1350 : this.spawn.room.energyAvailable < 1350)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1400 : this.spawn.room.energyAvailable < 1400)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 1700) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK]
     }
     if (body.length > 0) {
       let attrs = { role: 'upgrader', task: 'filling' }
