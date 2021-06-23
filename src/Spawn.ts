@@ -74,7 +74,75 @@ export default class Spawn extends ScreepObject {
 
   // Harvester: Built for stationary drop-mining
   spawnHarvester(transportAvailable: boolean): void {
-    let body:any = []
+    let body = this.harvesterBody(transportAvailable)
+    if (body.length > 0) {
+      let memory = this.memory
+      let creeps = this.spawn.room.find(FIND_MY_CREEPS)
+      let sources = this.spawn.room.find(FIND_SOURCES)
+      // Find unassigned energy source
+      let harvester_sources:any = _.reject(sources, function(s) { return _.filter(creeps, function(c){ return memory['creeps'][c.name]?.role == 'harvester' && memory['creeps'][c.name]['source'] == s.id }).length > 0 })
+      let harvester_source:any = _.sample(harvester_sources)
+      let attrs = { role: 'harvester', task: 'harvesting', source: harvester_source.id }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  // SpawnTransporter: Responsible for refilling spawn energy
+  spawnExtensionTransporter(transportAvailable: boolean): void {
+    let body = this.transportBody(transportAvailable)
+    if (body.length > 0) {
+      let attrs = { role: 'spawnTransporter', task: 'filling' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  // Transporter: Responsible for refilling energy (towers, storage, etc.)
+  spawnTransporter(transportAvailable: boolean): void {
+    let body = this.transportBody(transportAvailable)
+    if (body.length > 0) {
+      let attrs = { role: 'transporter', task: 'filling' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  // Constructor: Transports energy to build sites, falls back to upgrading if none available.
+  spawnConstructor(transportAvailable: boolean): void {
+    let body = this.workerBody(transportAvailable)
+    if (body.length > 0) {
+      let attrs = { role: 'constructor', task: 'filling' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  // Maintainer: Responsible for repairing roads and containers
+  spawnMaintainer(transportAvailable: boolean): void {
+    let body = this.workerBody(transportAvailable)
+    if (body.length > 0) {
+      let attrs = { role: 'maintainer', task: 'filling' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  // Repairer: Responsible for repairing walls and ramparts
+  spawnRepairer(transportAvailable: boolean): void {
+    let body = this.workerBody(transportAvailable)
+    if (body.length > 0) {
+      let attrs = { role: 'repairer', task: 'filling' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  // Upgrader: Transports energy to the room controller
+  spawnUpgrader(transportAvailable: boolean): void {
+    let body = this.workerBody(transportAvailable)
+    if (body.length > 0) {
+      let attrs = { role: 'upgrader', task: 'filling' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  harvesterBody(transportAvailable: boolean): BodyPartConstant[] {
+    let body:BodyPartConstant[] = []
     if (this.spawn.room.energyAvailable >= 250 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
       body = [MOVE, WORK, WORK]
     } else if (this.spawn.room.energyAvailable >= 350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 450 : this.spawn.room.energyAvailable < 450)) {
@@ -92,21 +160,11 @@ export default class Spawn extends ScreepObject {
     } else if (this.spawn.room.energyAvailable >= 750) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]
     }
-    if (body.length > 0) {
-      let memory = this.memory
-      let creeps = this.spawn.room.find(FIND_MY_CREEPS)
-      let sources = this.spawn.room.find(FIND_SOURCES)
-      // Find unassigned energy source
-      let harvester_sources:any = _.reject(sources, function(s) { return _.filter(creeps, function(c){ return memory['creeps'][c.name]?.role == 'harvester' && memory['creeps'][c.name]['source'] == s.id }).length > 0 })
-      let harvester_source:any = _.sample(harvester_sources)
-      let attrs = { role: 'harvester', task: 'harvesting', source: harvester_source.id }
-      this.spawnCreep(body, attrs)
-    }
+    return body
   }
 
-  // SpawnTransporter: Responsible for refilling spawn energy
-  spawnExtensionTransporter(transportAvailable: boolean): void {
-    let body:any = []
+  transportBody(transportAvailable: boolean): BodyPartConstant[] {
+    let body:BodyPartConstant[] = []
     if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 400 : this.spawn.room.energyAvailable < 400)) {
       body = [MOVE, MOVE, MOVE, CARRY, CARRY, CARRY]
     } else if (this.spawn.room.energyAvailable >= 400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 500 : this.spawn.room.energyAvailable < 500)) {
@@ -120,37 +178,11 @@ export default class Spawn extends ScreepObject {
     } else if (this.spawn.room.energyAvailable >= 800 ) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY]
     }
-    if (body.length > 0) {
-      let attrs = { role: 'spawnTransporter', task: 'filling' }
-      this.spawnCreep(body, attrs)
-    }
+    return body
   }
 
-  // Transporter: Responsible for refilling energy (towers, storage, etc.)
-  spawnTransporter(transportAvailable: boolean): void {
-    let body:any = []
-    if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 400 : this.spawn.room.energyAvailable < 400)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, CARRY]
-    } else if (this.spawn.room.energyAvailable >= 400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 500 : this.spawn.room.energyAvailable < 500)) {
-      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY]
-    } else if (this.spawn.room.energyAvailable >= 500 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 600 : this.spawn.room.energyAvailable < 600)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY]
-    } else if (this.spawn.room.energyAvailable >= 600 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 700 : this.spawn.room.energyAvailable < 700)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY]
-    } else if (this.spawn.room.energyAvailable >= 700 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 800 : this.spawn.room.energyAvailable < 800)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY]
-    } else if (this.spawn.room.energyAvailable >= 800 ) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY]
-    }
-    if (body.length > 0) {
-      let attrs = { role: 'transporter', task: 'filling' }
-      this.spawnCreep(body, attrs)
-    }
-  }
-
-  // Constructor: Transports energy to build sites, falls back to upgrading if none available.
-  spawnConstructor(transportAvailable: boolean): void {
-    let body:any = []
+  workerBody(transportAvailable: boolean): BodyPartConstant[] {
+    let body:BodyPartConstant[] = []
     if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
       body = [MOVE, MOVE, CARRY, CARRY, WORK]
     } else if (this.spawn.room.energyAvailable >= 350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 400 : this.spawn.room.energyAvailable < 400)) {
@@ -202,189 +234,6 @@ export default class Spawn extends ScreepObject {
     } else if (this.spawn.room.energyAvailable >= 1700) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK]
     }
-    if (body.length > 0) {
-      let attrs = { role: 'constructor', task: 'filling' }
-      this.spawnCreep(body, attrs)
-    }
-  }
-
-  // Maintainer: Responsible for repairing roads and containers
-  spawnMaintainer(transportAvailable: boolean): void {
-    let body:any = []
-    if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
-      body = [MOVE, MOVE, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 400 : this.spawn.room.energyAvailable < 400)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 450 : this.spawn.room.energyAvailable < 450)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 450 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 500 : this.spawn.room.energyAvailable < 500)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 500 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 550 : this.spawn.room.energyAvailable < 550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 600 : this.spawn.room.energyAvailable < 600)) {
-      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 600 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 650 : this.spawn.room.energyAvailable < 650)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 650 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 700 : this.spawn.room.energyAvailable < 700)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 700 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 750 : this.spawn.room.energyAvailable < 750)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 750 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 800 : this.spawn.room.energyAvailable < 800)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 800 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 850 : this.spawn.room.energyAvailable < 850)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 850 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 900 : this.spawn.room.energyAvailable < 900)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 900 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 950 : this.spawn.room.energyAvailable < 950)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 950 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1000 : this.spawn.room.energyAvailable < 1000)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1000 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1050 : this.spawn.room.energyAvailable < 1050)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1050 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1100 : this.spawn.room.energyAvailable < 1100)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1100 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1150 : this.spawn.room.energyAvailable < 1150)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1150 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1200 : this.spawn.room.energyAvailable < 1200)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1200 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1250 : this.spawn.room.energyAvailable < 1250)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1250 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1300 : this.spawn.room.energyAvailable < 1300)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1350 : this.spawn.room.energyAvailable < 1350)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1400 : this.spawn.room.energyAvailable < 1400)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1700) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK]
-    }
-    if (body.length > 0) {
-      let attrs = { role: 'maintainer', task: 'filling' }
-      this.spawnCreep(body, attrs)
-    }
-  }
-
-  // Repairer: Responsible for repairing walls and ramparts
-  spawnRepairer(transportAvailable: boolean): void {
-    let body:any = []
-    if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
-      body = [MOVE, MOVE, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 400 : this.spawn.room.energyAvailable < 400)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 450 : this.spawn.room.energyAvailable < 450)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 450 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 500 : this.spawn.room.energyAvailable < 500)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 500 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 550 : this.spawn.room.energyAvailable < 550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 600 : this.spawn.room.energyAvailable < 600)) {
-      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 600 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 650 : this.spawn.room.energyAvailable < 650)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 650 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 700 : this.spawn.room.energyAvailable < 700)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 700 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 750 : this.spawn.room.energyAvailable < 750)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 750 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 800 : this.spawn.room.energyAvailable < 800)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 800 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 850 : this.spawn.room.energyAvailable < 850)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 850 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 900 : this.spawn.room.energyAvailable < 900)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 900 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 950 : this.spawn.room.energyAvailable < 950)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 950 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1000 : this.spawn.room.energyAvailable < 1000)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1000 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1050 : this.spawn.room.energyAvailable < 1050)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1050 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1100 : this.spawn.room.energyAvailable < 1100)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1100 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1150 : this.spawn.room.energyAvailable < 1150)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1150 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1200 : this.spawn.room.energyAvailable < 1200)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1200 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1250 : this.spawn.room.energyAvailable < 1250)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1250 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1300 : this.spawn.room.energyAvailable < 1300)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1350 : this.spawn.room.energyAvailable < 1350)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1400 : this.spawn.room.energyAvailable < 1400)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1700) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK]
-    }
-    if (body.length > 0) {
-      let attrs = { role: 'repairer', task: 'filling' }
-      this.spawnCreep(body, attrs)
-    }
-  }
-
-  // Upgrader: Transports energy to the room controller
-  spawnUpgrader(transportAvailable: boolean): void {
-    let body:any = []
-    if (this.spawn.room.energyAvailable >= 300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 350 : this.spawn.room.energyAvailable < 350)) {
-      body = [MOVE, MOVE, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 400 : this.spawn.room.energyAvailable < 400)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 450 : this.spawn.room.energyAvailable < 450)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK]
-    } else if (this.spawn.room.energyAvailable >= 450 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 500 : this.spawn.room.energyAvailable < 500)) {
-      body = [MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 500 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 550 : this.spawn.room.energyAvailable < 550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 600 : this.spawn.room.energyAvailable < 600)) {
-      body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 600 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 650 : this.spawn.room.energyAvailable < 650)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 650 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 700 : this.spawn.room.energyAvailable < 700)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 700 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 750 : this.spawn.room.energyAvailable < 750)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 750 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 800 : this.spawn.room.energyAvailable < 800)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 800 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 850 : this.spawn.room.energyAvailable < 850)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 850 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 900 : this.spawn.room.energyAvailable < 900)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 900 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 950 : this.spawn.room.energyAvailable < 950)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 950 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1000 : this.spawn.room.energyAvailable < 1000)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1000 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1050 : this.spawn.room.energyAvailable < 1050)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1050 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1100 : this.spawn.room.energyAvailable < 1100)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1100 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1150 : this.spawn.room.energyAvailable < 1150)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1150 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1200 : this.spawn.room.energyAvailable < 1200)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1200 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1250 : this.spawn.room.energyAvailable < 1250)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1250 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1300 : this.spawn.room.energyAvailable < 1300)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1300 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1350 : this.spawn.room.energyAvailable < 1350)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1350 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1400 : this.spawn.room.energyAvailable < 1400)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1400 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1550 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 1550 : this.spawn.room.energyAvailable < 1550)) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 1700) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK]
-    }
-    if (body.length > 0) {
-      let attrs = { role: 'upgrader', task: 'filling' }
-      this.spawnCreep(body, attrs)
-    }
+    return body
   }
 }
