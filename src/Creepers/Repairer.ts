@@ -21,13 +21,13 @@ export default class Repairer extends Creeper {
           let result = creep.withdraw(target, RESOURCE_ENERGY)
           if (result == ERR_NOT_IN_RANGE)         { self.moveTo(target.pos) }
           if (result == ERR_NOT_ENOUGH_RESOURCES) { creepMemory.target = undefined }
-          if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
+          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
             creepMemory.task = 'repairing'
             creepMemory.target = undefined
           }
         } else {
           if (creep.pickup(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
-          if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
+          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
             creepMemory.task = 'repairing'
             creepMemory.target = undefined
           }
@@ -38,14 +38,14 @@ export default class Repairer extends Creeper {
       // Repair structures by largest difference in hp. Will definitely need more intelligent filtering.
       case 'repairing': {
         if (!creepMemory.target) {
-          let targets:any = _.sortBy(creep.room.find(FIND_STRUCTURES, { filter: s => (s.structureType == STRUCTURE_WALL || s.structureType == STRUCTURE_RAMPART) && s.hits < s.hitsMax }), s => s.hits)
+          let targets:any = _.sortBy(creep.room.find(FIND_STRUCTURES, { filter: s => (s.structureType == STRUCTURE_WALL || s.structureType == STRUCTURE_RAMPART) && s.hits < s.hitsMax }), s => -s.hits)
           if (targets.length > 0) { creepMemory.target = targets[0].id }
         }
         let target:any = Game.getObjectById(creepMemory.target)
         if (target) {
           if (creep.repair(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
           if (target.hits == target.hitsMax) { creepMemory.target = undefined }
-          if (creep.carry[RESOURCE_ENERGY] == 0) {
+          if (creep.store[RESOURCE_ENERGY] == 0) {
             creepMemory.task = 'filling'
             creepMemory.target = undefined
           }

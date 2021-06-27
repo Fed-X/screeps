@@ -21,13 +21,13 @@ export default class Maintainer extends Creeper {
           let result = creep.withdraw(target, RESOURCE_ENERGY)
           if (result == ERR_NOT_IN_RANGE)         { self.moveTo(target.pos) }
           if (result == ERR_NOT_ENOUGH_RESOURCES) { creepMemory.target = undefined }
-          if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
+          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
             creepMemory.task = 'repairing'
             creepMemory.target = undefined
           }
         } else {
           if (creep.pickup(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
-          if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
+          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
             creepMemory.task = 'repairing'
             creepMemory.target = undefined
           }
@@ -45,7 +45,7 @@ export default class Maintainer extends Creeper {
         if (target) {
           if (creep.repair(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
           if (target.hits == target.hitsMax) { creepMemory.target = undefined }
-          if (creep.carry[RESOURCE_ENERGY] == 0) {
+          if (creep.store[RESOURCE_ENERGY] == 0) {
             creepMemory.task = 'filling'
             creepMemory.target = undefined
           }

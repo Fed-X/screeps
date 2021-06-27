@@ -21,13 +21,13 @@ export default class Upgrader extends Creeper {
           let result = creep.withdraw(target, RESOURCE_ENERGY)
           if (result == ERR_NOT_IN_RANGE)         { self.moveTo(target.pos) }
           if (result == ERR_NOT_ENOUGH_RESOURCES) { creepMemory.target = undefined }
-          if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
+          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
             creepMemory.task = 'upgrading'
             creepMemory.target = undefined
           }
         } else {
           if (creep.pickup(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
-          if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
+          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
             creepMemory.task = 'upgrading'
             creepMemory.target = undefined
           }
@@ -48,7 +48,7 @@ export default class Upgrader extends Creeper {
         } else {
           self.moveTo(target.pos)
         }
-        if (creep.carry[RESOURCE_ENERGY] == 0) {
+        if (creep.store[RESOURCE_ENERGY] == 0) {
           creepMemory.task = 'filling'
         }
         break

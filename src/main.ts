@@ -80,6 +80,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // Run room functions
   for (const name in Game.rooms) {
     let room = Game.rooms[name]
+    
     let towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } })
     _.each(towers, (tower: StructureTower) => {
       let enemies = room.find(FIND_HOSTILE_CREEPS)
@@ -87,6 +88,23 @@ export const loop = ErrorMapper.wrapLoop(() => {
         tower.attack(enemies[0])
       }
     })
+
+    let source_links = _.filter(room.find(FIND_SOURCES), source => {
+      let link = source.pos.findClosestByPath(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } })
+      return (link ? source.pos.inRangeTo(link, 2) : false)
+    })
+    let storage = room.controller && room.controller.pos.findClosestByPath(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_STORAGE } })
+    if (storage) {
+      let storage_link = storage.pos.findClosestByPath(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } })
+      if (storage_link && storage.pos.inRangeTo(storage_link, 2)) {
+        _.each(source_links, source => {
+          let link:any = source.pos.findClosestByPath(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } })
+          if (link && link.store[RESOURCE_ENERGY] / link.store.getCapacity(RESOURCE_ENERGY) >= 0.25) {
+            link.transferEnergy(storage_link)
+          }
+        })
+      }
+    }
   }
 
   RawMemory.set(JSON.stringify(memory))

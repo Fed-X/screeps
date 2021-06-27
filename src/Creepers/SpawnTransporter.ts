@@ -28,13 +28,13 @@ export default class SpawnTransporter extends Creeper {
           let result = creep.withdraw(target, RESOURCE_ENERGY)
           if (result == ERR_NOT_IN_RANGE)         { self.moveTo(target.pos) }
           if (result == ERR_NOT_ENOUGH_RESOURCES) { creepMemory.target = undefined }
-          if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
+          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
             creepMemory.task = 'transporting'
             creepMemory.target = undefined
           }
         } else {
           if (creep.pickup(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
-          if (creep.carry[RESOURCE_ENERGY] == creep.carryCapacity) {
+          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
             creepMemory.task = 'transporting'
             creepMemory.target = undefined
           }
@@ -48,7 +48,7 @@ export default class SpawnTransporter extends Creeper {
           let spawns = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } }), function(struct:any){ return struct.energy < struct.energyCapacity })
           let extensions = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_EXTENSION } }), function(struct:any){ return struct.energy < struct.energyCapacity })
           let towers = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } }), function(struct:any){ return struct.energy < struct.energyCapacity })
-          let storage = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_STORAGE } }), function(struct:any){ return struct.store[RESOURCE_ENERGY] < struct.store.getCapacity() })
+          let storage = _.filter(creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_STORAGE } }), function(struct:any){ return struct.store[RESOURCE_ENERGY] < struct.store.getCapacity(RESOURCE_ENERGY) })
           if (spawns.length > 0) {
             creepMemory.target = spawns[0].id
           } else if (extensions.length > 0) {
@@ -63,7 +63,7 @@ export default class SpawnTransporter extends Creeper {
         if (target) {
           if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
           if (target.energy == target.energyCapacity) { creepMemory.target = undefined }
-          if (creep.carry[RESOURCE_ENERGY] == 0) {
+          if (creep.store[RESOURCE_ENERGY] == 0) {
             creepMemory.task = 'filling'
             creepMemory.target = undefined
           }

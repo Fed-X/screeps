@@ -157,8 +157,12 @@ export default class Spawn extends ScreepObject {
       body = [MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]
     } else if (this.spawn.room.energyAvailable >= 700 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 750 : this.spawn.room.energyAvailable < 750)) {
       body = [MOVE, MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]
-    } else if (this.spawn.room.energyAvailable >= 750) {
+    } else if (this.spawn.room.energyAvailable >= 750 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 850 : this.spawn.room.energyAvailable < 850)) {
       body = [MOVE, MOVE, MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 850 && (transportAvailable ? this.spawn.room.energyCapacityAvailable < 950 : this.spawn.room.energyAvailable < 950)) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, WORK, WORK, WORK, WORK, WORK]
+    } else if (this.spawn.room.energyAvailable >= 950) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK]
     }
     return body
   }
