@@ -21,13 +21,13 @@ export default class Constructor extends Creeper {
           let result = creep.withdraw(target, RESOURCE_ENERGY)
           if (result == ERR_NOT_IN_RANGE)         { self.moveTo(target.pos) }
           if (result == ERR_NOT_ENOUGH_RESOURCES) { creepMemory.target = undefined }
-          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
+          if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
             creepMemory.task = 'constructing'
             creepMemory.target = undefined
           }
         } else {
           if (creep.pickup(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
-          if (creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
+          if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
             creepMemory.task = 'constructing'
             creepMemory.target = undefined
           }
@@ -37,13 +37,22 @@ export default class Constructor extends Creeper {
 
       // Transport energy to build sites by largest first. Convert into upgrader if none available.
       case 'constructing': {
+        let ramparts = creep.room.find(FIND_MY_STRUCTURES, { filter: (s:any) => s.structureType == STRUCTURE_RAMPART && s.hits == 1 })
+        if (ramparts.length > 0 && !Game.getObjectById(creepMemory.target)) {
+          creepMemory.task = 'repairing'
+          creepMemory.target = ramparts[0].id
+        }
         if (!creepMemory.target || !Game.getObjectById(creepMemory.target)) {
           let targets:any = _.sortBy(creep.room.find(FIND_MY_CONSTRUCTION_SITES), function(s:any){ return s.progressTotal })
           if (targets.length > 0) { creepMemory.target = targets[0].id }
         }
         let target:any = Game.getObjectById(creepMemory.target)
         if (target) {
-          if (creep.build(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
+          if (creep.pos.inRangeTo(target.pos, 3)) {
+            creep.build(target)
+          } else {
+            self.moveTo(target.pos)
+          }
           if (creep.store[RESOURCE_ENERGY] == 0) {
             creepMemory.task = 'filling'
             creepMemory.target = undefined
@@ -70,6 +79,22 @@ export default class Constructor extends Creeper {
         }
         if (creep.store[RESOURCE_ENERGY] == 0) {
           creepMemory.task = 'filling'
+        }
+        break
+      }
+
+      // Initialize ramparts
+      case 'repairing': {
+        let target:any = Game.getObjectById(creepMemory.target)
+        if (target) {
+          if (creep.repair(target) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
+          if (creep.store[RESOURCE_ENERGY] == 0) {
+            creepMemory.task = 'filling'
+            creepMemory.target = undefined
+          }
+        } else {
+          creepMemory.task = 'filling'
+          creepMemory.target = undefined
         }
         break
       }

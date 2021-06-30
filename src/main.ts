@@ -99,9 +99,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       if (storage_link && storage.pos.inRangeTo(storage_link, 2)) {
         _.each(source_links, source => {
           let link:any = source.pos.findClosestByPath(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } })
-          if (link && link.store[RESOURCE_ENERGY] / link.store.getCapacity(RESOURCE_ENERGY) >= 0.25) {
-            link.transferEnergy(storage_link)
-          }
+          link.transferEnergy(storage_link, 413)
         })
       }
     }

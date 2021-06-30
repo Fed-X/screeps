@@ -27,7 +27,7 @@ export default class Harvester extends Creeper {
             self.moveTo(position)
           } else {
             creep.harvest(source)
-            if (creep.store.getCapacity(RESOURCE_ENERGY) > 0 && creep.store[RESOURCE_ENERGY] == creep.store.getCapacity(RESOURCE_ENERGY)) {
+            if (creep.store.getCapacity(RESOURCE_ENERGY) > 0 && creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
               let link = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } })
               if (link && creep.pos.inRangeTo(link, 1)) {
                 creep.transfer(link, RESOURCE_ENERGY)
