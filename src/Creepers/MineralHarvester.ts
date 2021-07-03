@@ -30,7 +30,7 @@ export default class MineralHarvester extends Creeper {
             if (creep.store.getCapacity(RESOURCE_ENERGY) > 0 && creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
               let lab = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_LAB } })
               if (lab) {
-                creepMemory.task = 'transporting'
+                creepMemory.task = 'transporting:lab'
                 creepMemory.target = lab.id
               }
             }
@@ -40,7 +40,28 @@ export default class MineralHarvester extends Creeper {
       }
 
       // Transport minerals to lab
-      case 'transporting': {
+      case 'transporting:lab': {
+        let target:any = Game.getObjectById(creepMemory.target)
+        if (target) {
+          if (!target.mineralType || target.store.getFreeCapacity(creepMemory.mineral as MineralConstant) > 0) {
+            if (creep.transfer(target, creepMemory.mineral as MineralConstant) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
+            if (creep.store[creepMemory.mineral as MineralConstant] == 0) {
+              creepMemory.task = 'harvesting'
+              creepMemory.target = undefined
+            }
+          } else {
+            let storages = _.filter(creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_STORAGE } }), (s:StructureStorage) => s.store.getFreeCapacity(creepMemory.mineral as MineralConstant) > 0)
+            if (storages.length > 0) {
+              creepMemory.task = 'transporting:storage'
+              creepMemory.target = storages[0].id
+            }
+          }
+        }
+        break
+      }
+
+      // Transport minerals to storage
+      case 'transporting:storage': {
         let target:any = Game.getObjectById(creepMemory.target)
         if (target) {
           if (creep.transfer(target, creepMemory.mineral as MineralConstant) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }

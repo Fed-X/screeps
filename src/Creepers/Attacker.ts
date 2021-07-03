@@ -7,7 +7,7 @@ export default class Attacker extends Creeper {
     let creepMemory = this.memory['creeps'][creep.name]
     switch (creepMemory.task) {
       case 'attacking': {
-        let flags = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_RED)
+        let flags = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_RED && flag.secondaryColor == COLOR_RED)
         if (flags.length > 0) {
           let flag = flags[0]
           if (creep.room.name == flag.pos.roomName) {

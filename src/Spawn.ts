@@ -34,9 +34,11 @@ export default class Spawn extends ScreepObject {
       let maintainers = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'maintainer')
       let repairers = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'repairer')
       let upgraders = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'upgrader')
+      let claimers = _.values(_.pick(memory['creeps'], c => c.role == 'claimer'))
+      let unclaimed = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_GREEN && flag.secondaryColor == COLOR_GREEN && (!(flag.pos.roomName in Game.rooms) || (flag.room?.controller && !flag.room.controller.my)))
       let transportAvailable = harvesters.length > 0 && spawnTransporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
 
-      if (harvesters.length < sources.length + minerals.length) {  // Single stationary harvester per source
+      if (harvesters.length < sources.length + minerals.length) {  // Single harvester per source
         this.spawnHarvester(transportAvailable)
       } else if (spawnTransporters.length < 1) {                   // Single spawn / extension transporter
         this.spawnExtensionTransporter(transportAvailable)
@@ -50,6 +52,8 @@ export default class Spawn extends ScreepObject {
         this.spawnMaintainer(transportAvailable)
       } else if (repairers.length < 1) {                           // Single repairer
         this.spawnRepairer(transportAvailable)
+      } else if (claimers.length < unclaimed.length) {             // Single claimer per controller
+        this.spawnClaimer(transportAvailable)
       }
     }
   }
@@ -69,6 +73,21 @@ export default class Spawn extends ScreepObject {
     }
     if (body.length > 0) {
       let attrs = { role: 'attacker', task: 'attacking' }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  spawnClaimer(transportAvailable: boolean): void {
+    let body:any = []
+    if (this.spawn.room.energyAvailable >= 1300) {
+      body = [MOVE, MOVE, CLAIM, CLAIM]
+    }
+    if (body.length > 0) {
+      let memory = this.memory
+      let flags:any = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_GREEN && flag.secondaryColor == COLOR_GREEN && (!(flag.pos.roomName in Game.rooms) || (flag.room?.controller && !flag.room.controller.my)))
+      flags = _.reject(flags, (f:any) => _.any(_.values(memory['creeps']), (c:any) => c['role'] == 'claimer' && c['target'] == f['name']))
+      let flag:any = _.sample(flags)
+      let attrs = { role: 'claimer', task: 'claiming', target: flag.name }
       this.spawnCreep(body, attrs)
     }
   }
