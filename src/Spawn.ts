@@ -80,7 +80,7 @@ export default class Spawn extends ScreepObject {
       let memory = this.memory
       let creeps = this.spawn.room.find(FIND_MY_CREEPS)
       let sources = this.spawn.room.find(FIND_SOURCES)
-      let minerals = _.filter(this.spawn.room.find(FIND_MINERALS), mineral => _.any(mineral.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_EXTRACTOR))
+      let minerals = _.reject(_.filter(this.spawn.room.find(FIND_MINERALS), m => _.any(m.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_EXTRACTOR)), m => _.any(creeps, c => memory['creeps'][c.name]?.role == 'mineralHarvester' && memory['creeps'][c.name]['source'] == m.id))
       // Find unassigned energy source
       let harvester_sources:any = _.reject(sources, s => _.any(creeps, c => memory['creeps'][c.name]?.role == 'harvester' && memory['creeps'][c.name]['source'] == s.id))
       let harvester_source:any = _.sample(harvester_sources)
