@@ -26,28 +26,29 @@ export default class Spawn extends ScreepObject {
 
     if (this.spawn.room.energyAvailable >= 250) {
       let sources = this.spawn.room.find(FIND_SOURCES)
-      let harvesters = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'harvester' })
-      let transporters = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'transporter' })
-      let spawnTransporters = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'spawnTransporter' })
-      let constructors = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'constructor' })
-      let maintainers = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'maintainer' })
-      let repairers = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'repairer' })
-      let upgraders = _.filter(creeps, function(c) { return memory['creeps'][c.name]?.role == 'upgrader' })
+      let minerals = _.filter(this.spawn.room.find(FIND_MINERALS), mineral => _.any(mineral.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_EXTRACTOR))
+      let harvesters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'harvester')
+      let transporters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'transporter')
+      let spawnTransporters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'spawnTransporter')
+      let constructors = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'constructor')
+      let maintainers = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'maintainer')
+      let repairers = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'repairer')
+      let upgraders = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'upgrader')
       let transportAvailable = harvesters.length > 0 && spawnTransporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
 
-      if (harvesters.length < sources.length) {               // Single stationary harvester per source
+      if (harvesters.length < sources.length + minerals.length) {  // Single stationary harvester per source
         this.spawnHarvester(transportAvailable)
-      } else if (spawnTransporters.length < 1) {              // Single spawn / extension transporter
+      } else if (spawnTransporters.length < 1) {                   // Single spawn / extension transporter
         this.spawnExtensionTransporter(transportAvailable)
-      } else if (transporters.length < 1) {                   // Single transporter for all other structures
+      } else if (transporters.length < 1) {                        // Single transporter for all other structures
         this.spawnTransporter(transportAvailable)
-      } else if (constructors.length < 1) {                   // Single constructor
+      } else if (constructors.length < 1) {                        // Single constructor
         this.spawnConstructor(transportAvailable)
-      } else if (upgraders.length < 1) {                      // Single upgrader
+      } else if (upgraders.length < 1) {                           // Single upgrader
         this.spawnUpgrader(transportAvailable)
-      } else if (maintainers.length < 1) {                    // Single maintainer
+      } else if (maintainers.length < 1) {                         // Single maintainer
         this.spawnMaintainer(transportAvailable)
-      } else if (repairers.length < 1) {                      // Single repairer
+      } else if (repairers.length < 1) {                           // Single repairer
         this.spawnRepairer(transportAvailable)
       }
     }
@@ -79,11 +80,17 @@ export default class Spawn extends ScreepObject {
       let memory = this.memory
       let creeps = this.spawn.room.find(FIND_MY_CREEPS)
       let sources = this.spawn.room.find(FIND_SOURCES)
+      let minerals = _.filter(this.spawn.room.find(FIND_MINERALS), mineral => _.any(mineral.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_EXTRACTOR))
       // Find unassigned energy source
-      let harvester_sources:any = _.reject(sources, function(s) { return _.filter(creeps, function(c){ return memory['creeps'][c.name]?.role == 'harvester' && memory['creeps'][c.name]['source'] == s.id }).length > 0 })
+      let harvester_sources:any = _.reject(sources, s => _.any(creeps, c => memory['creeps'][c.name]?.role == 'harvester' && memory['creeps'][c.name]['source'] == s.id))
       let harvester_source:any = _.sample(harvester_sources)
-      let attrs = { role: 'harvester', task: 'harvesting', source: harvester_source.id }
-      this.spawnCreep(body, attrs)
+      if (harvester_source == null && minerals.length > 0) {
+        let attrs = { role: 'mineralHarvester', task: 'harvesting', source: minerals[0].id, mineral: minerals[0].mineralType }
+        this.spawnCreep(body, attrs)
+      } else {
+        let attrs = { role: 'harvester', task: 'harvesting', source: harvester_source.id }
+        this.spawnCreep(body, attrs)
+      }
     }
   }
 

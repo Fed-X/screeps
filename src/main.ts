@@ -6,6 +6,7 @@ import Constructor from "Creepers/Constructor"
 import SpawnTransporter from "Creepers/SpawnTransporter"
 import Transporter from "Creepers/Transporter"
 import Harvester from "Creepers/Harvester"
+import MineralHarvester from "Creepers/MineralHarvester"
 import Maintainer from "Creepers/Maintainer"
 import Repairer from "Creepers/Repairer"
 import Attacker from "Creepers/Attacker"
@@ -66,6 +67,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     let creepMemory = memory['creeps'][name]
     switch (creepMemory?.role) {
       case 'harvester': { creep = new Harvester(memory, Game.creeps[name]); break }
+      case 'mineralHarvester': { creep = new MineralHarvester(memory, Game.creeps[name]); break }
       case 'spawnTransporter': { creep = new SpawnTransporter(memory, Game.creeps[name]); break }
       case 'transporter': { creep = new Transporter(memory, Game.creeps[name]); break }
       case 'upgrader': { creep = new Upgrader(memory, Game.creeps[name]); break }
