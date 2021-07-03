@@ -27,7 +27,7 @@ export default class Spawn extends ScreepObject {
     if (this.spawn.room.energyAvailable >= 250) {
       let sources = this.spawn.room.find(FIND_SOURCES)
       let minerals = _.filter(this.spawn.room.find(FIND_MINERALS), mineral => _.any(mineral.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_EXTRACTOR))
-      let harvesters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'harvester')
+      let harvesters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'harvester' || memory['creeps'][c.name]?.role == 'mineralHarvester')
       let transporters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'transporter')
       let spawnTransporters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'spawnTransporter')
       let constructors = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'constructor')
