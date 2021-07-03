@@ -27,7 +27,7 @@ export default class MineralHarvester extends Creeper {
             self.moveTo(position)
           } else {
             creep.harvest(source)
-            if (creep.store.getCapacity(RESOURCE_ENERGY) > 0 && creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+            if (creep.store.getCapacity(creepMemory.mineral as MineralConstant) > 0 && creep.store.getFreeCapacity(creepMemory.mineral as MineralConstant) == 0) {
               let lab = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_LAB } })
               if (lab) {
                 creepMemory.task = 'transporting:lab'

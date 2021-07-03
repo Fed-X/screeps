@@ -77,6 +77,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       case 'maintainer': { creep = new Maintainer(memory, Game.creeps[name]); break }
       case 'attacker': { creep = new Attacker(memory, Game.creeps[name]); break }
       case 'claimer': { creep = new Claimer(memory, Game.creeps[name]); break }
+      default: { Game.creeps[name].suicide() }
     }
     if (creep) { creep.run() }
   }

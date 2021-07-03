@@ -13,7 +13,7 @@ export default class Attacker extends Creeper {
             if (target.room!.controller!.my) {
               target.remove()
             } else {
-              if (creep.claimController(target.room!.controller) == ERR_NOT_IN_RANGE) { creep.moveTo(target) }
+              if (creep.claimController(target.room!.controller) == ERR_NOT_IN_RANGE) { creep.moveTo(target.room!.controller!.pos) }
             }
           } else {
             creep.moveTo(target.pos)

@@ -79,8 +79,8 @@ export default class Spawn extends ScreepObject {
 
   spawnClaimer(transportAvailable: boolean): void {
     let body:any = []
-    if (this.spawn.room.energyAvailable >= 1300) {
-      body = [MOVE, MOVE, CLAIM, CLAIM]
+    if (this.spawn.room.energyAvailable >= 1700) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM, CLAIM]
     }
     if (body.length > 0) {
       let memory = this.memory
