@@ -43,8 +43,8 @@ export default class MineralHarvester extends Creeper {
       case 'transporting': {
         let target:any = Game.getObjectById(creepMemory.target)
         if (target) {
-          if (creep.transfer(target, creepMemory.mineralType as MineralConstant) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
-          if (creep.store[creepMemory.mineralType as MineralConstant] == 0) {
+          if (creep.transfer(target, creepMemory.mineral as MineralConstant) == ERR_NOT_IN_RANGE) { self.moveTo(target.pos) }
+          if (creep.store[creepMemory.mineral as MineralConstant] == 0) {
             creepMemory.task = 'harvesting'
             creepMemory.target = undefined
           }
