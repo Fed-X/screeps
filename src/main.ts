@@ -11,6 +11,7 @@ import Maintainer from "Creepers/Maintainer"
 import Repairer from "Creepers/Repairer"
 import Attacker from "Creepers/Attacker"
 import Claimer from "Creepers/Claimer"
+import Reserver from "Creepers/Reserver"
 
 declare global {
   /*
@@ -77,6 +78,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       case 'maintainer': { creep = new Maintainer(memory, Game.creeps[name]); break }
       case 'attacker': { creep = new Attacker(memory, Game.creeps[name]); break }
       case 'claimer': { creep = new Claimer(memory, Game.creeps[name]); break }
+      case 'reserver': { creep = new Reserver(memory, Game.creeps[name]); break }
       default: { Game.creeps[name].suicide() }
     }
     if (creep) { creep.run() }

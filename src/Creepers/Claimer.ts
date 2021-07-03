@@ -1,6 +1,6 @@
 import Creeper from "../Creeper"
 
-export default class Attacker extends Creeper {
+export default class Claimer extends Creeper {
   run(): void {
     let self = this
     let creep = this.creep

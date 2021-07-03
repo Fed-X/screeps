@@ -35,7 +35,9 @@ export default class Spawn extends ScreepObject {
       let repairers = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'repairer')
       let upgraders = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'upgrader')
       let claimers = _.values(_.pick(memory['creeps'], c => c.role == 'claimer'))
+      let reservers = _.values(_.pick(memory['creeps'], c => c.role == 'reserver'))
       let unclaimed = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_GREEN && flag.secondaryColor == COLOR_GREEN && (!(flag.pos.roomName in Game.rooms) || (flag.room?.controller && !flag.room.controller.my)))
+      let unreserved = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_GREEN && flag.secondaryColor == COLOR_WHITE)
       let transportAvailable = harvesters.length > 0 && spawnTransporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
 
       if (harvesters.length < sources.length + minerals.length) {  // Single harvester per source
@@ -54,6 +56,8 @@ export default class Spawn extends ScreepObject {
         this.spawnRepairer(transportAvailable)
       } else if (claimers.length < unclaimed.length) {             // Single claimer per controller
         this.spawnClaimer(transportAvailable)
+      } else if (reservers.length < unreserved.length) {           // Single reserver per controller
+        this.spawnReserver(transportAvailable)
       }
     }
   }
@@ -79,8 +83,8 @@ export default class Spawn extends ScreepObject {
 
   spawnClaimer(transportAvailable: boolean): void {
     let body:any = []
-    if (this.spawn.room.energyAvailable >= 1700) {
-      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM, CLAIM]
+    if (this.spawn.room.energyAvailable >= 850) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM]
     }
     if (body.length > 0) {
       let memory = this.memory
@@ -88,6 +92,21 @@ export default class Spawn extends ScreepObject {
       flags = _.reject(flags, (f:any) => _.any(_.values(memory['creeps']), (c:any) => c['role'] == 'claimer' && c['target'] == f['name']))
       let flag:any = _.sample(flags)
       let attrs = { role: 'claimer', task: 'claiming', target: flag.name }
+      this.spawnCreep(body, attrs)
+    }
+  }
+
+  spawnReserver(transportAvailable: boolean): void {
+    let body:any = []
+    if (this.spawn.room.energyAvailable >= 1700) {
+      body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM, CLAIM]
+    }
+    if (body.length > 0) {
+      let memory = this.memory
+      let flags:any = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_GREEN && flag.secondaryColor == COLOR_WHITE)
+      flags = _.reject(flags, (f:any) => _.any(_.values(memory['creeps']), (c:any) => c['role'] == 'reserver' && c['target'] == f['name']))
+      let flag:any = _.sample(flags)
+      let attrs = { role: 'reserver', task: 'reserving', target: flag.name }
       this.spawnCreep(body, attrs)
     }
   }
