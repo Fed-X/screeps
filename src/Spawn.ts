@@ -26,7 +26,7 @@ export default class Spawn extends ScreepObject {
 
     if (this.spawn.room.energyAvailable >= 250) {
       let sources = this.spawn.room.find(FIND_SOURCES)
-      let minerals = _.filter(this.spawn.room.find(FIND_MINERALS), mineral => _.any(mineral.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_EXTRACTOR))
+      let minerals = _.filter(this.spawn.room.find(FIND_MINERALS), mineral => mineral.mineralAmount > 0 && _.any(mineral.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_EXTRACTOR))
       let harvesters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'harvester' || memory['creeps'][c.name]?.role == 'mineralHarvester')
       let transporters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'transporter')
       let spawnTransporters = _.filter(creeps, c => memory['creeps'][c.name]?.role == 'spawnTransporter')
@@ -38,6 +38,7 @@ export default class Spawn extends ScreepObject {
       let reservers = _.values(_.pick(memory['creeps'], c => c.role == 'reserver'))
       let unclaimed = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_GREEN && flag.secondaryColor == COLOR_GREEN && (!(flag.pos.roomName in Game.rooms) || (flag.room?.controller && !flag.room.controller.my)))
       let unreserved = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_GREEN && flag.secondaryColor == COLOR_WHITE)
+      let targets = _.filter(_.map(Game.flags, flag => flag), flag => flag.color == COLOR_RED && flag.secondaryColor == COLOR_RED)
       let transportAvailable = harvesters.length > 0 && spawnTransporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
 
       if (harvesters.length < sources.length + minerals.length) {  // Single harvester per source
@@ -54,6 +55,8 @@ export default class Spawn extends ScreepObject {
         this.spawnMaintainer(transportAvailable)
       } else if (repairers.length < 1) {                           // Single repairer
         this.spawnRepairer(transportAvailable)
+      } else if (targets.length > 0) {                             // Spawn attackers
+        this.spawnAttacker(transportAvailable)
       } else if (claimers.length < unclaimed.length) {             // Single claimer per controller
         this.spawnClaimer(transportAvailable)
       } else if (reservers.length < unreserved.length) {           // Single reserver per controller

@@ -20,6 +20,8 @@ export default class Attacker extends Creeper {
           } else {
             creep.moveTo(flag.pos)
           }
+        } else {
+          creep.suicide()
         }
       }
 
