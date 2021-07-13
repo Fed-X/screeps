@@ -67,13 +67,8 @@ export default class Constructor extends Creeper {
       // Upgrade room controller
       case 'upgrading': {
         let target:any = creep.room.controller
-        let roads = _.any(creep.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_ROAD)
         if (creep.pos.inRangeTo(target, 3)) {
-          if (_.any(creep.pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_ROAD)) {
-            creep.moveTo(target)
-          } else {
             creep.upgradeController(target)
-          }
         } else {
           self.moveTo(target.pos)
         }
