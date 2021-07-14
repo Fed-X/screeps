@@ -18,10 +18,30 @@ export default class Harvester extends Creeper {
             creepMemory.position.x = container.pos.x
             creepMemory.position.y = container.pos.y
             creepMemory.position.name = container.pos.roomName
+          } else {
+            let creepPossiblePositions = []
+            creepPossiblePositions.push(new RoomPosition(creepMemory.position.x+1, creepMemory.position.y+1, creepMemory.position.name))
+            creepPossiblePositions.push(new RoomPosition(creepMemory.position.x+1, creepMemory.position.y, creepMemory.position.name))      
+            creepPossiblePositions.push(new RoomPosition(creepMemory.position.x+1, creepMemory.position.y-1, creepMemory.position.name))      
+            creepPossiblePositions.push(new RoomPosition(creepMemory.position.x, creepMemory.position.y+1, creepMemory.position.name))      
+            creepPossiblePositions.push(new RoomPosition(creepMemory.position.x, creepMemory.position.y-1, creepMemory.position.name))      
+            creepPossiblePositions.push(new RoomPosition(creepMemory.position.x-1, creepMemory.position.y+1, creepMemory.position.name))      
+            creepPossiblePositions.push(new RoomPosition(creepMemory.position.x-1, creepMemory.position.y, creepMemory.position.name))      
+            creepPossiblePositions.push(new RoomPosition(creepMemory.position.x-1, creepMemory.position.y-1, creepMemory.position.name))
+            let position = _.find(creepPossiblePositions, pos => !_.any(pos.lookFor(LOOK_STRUCTURES), s => s.structureType == STRUCTURE_WALL))                        
+            creepMemory.position = {}
+            creepMemory.position.x = position.x
+            creepMemory.position.y = position.y
+            creepMemory.position.name = position.roomName
           }
         }
 
         if ('position' in creepMemory) { 
+          let container = source.pos.findClosestByPath(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_CONTAINER } })
+          if (container == null || source.pos.getRangeTo(container) > 1) { container = source.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES, { filter: { structureType: STRUCTURE_CONTAINER } }) }
+          if (container && source.pos.getRangeTo(container) == 1) {
+            delete creepMemory['position']
+          }  
           const position = new RoomPosition(creepMemory.position.x, creepMemory.position.y, creepMemory.position.name)
           if (creep.pos.x != position.x || creep.pos.y != position.y) {
             self.moveTo(position)

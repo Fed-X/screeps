@@ -20,7 +20,18 @@ export default class Maintainer extends Creeper {
         if ((target instanceof StructureContainer) || (target instanceof StructureStorage)) {
           let result = creep.withdraw(target, RESOURCE_ENERGY)
           if (result == ERR_NOT_IN_RANGE)         { self.moveTo(target.pos) }
-          if (result == ERR_NOT_ENOUGH_RESOURCES) { creepMemory.target = undefined }
+          if (result == ERR_NOT_ENOUGH_RESOURCES) { 
+            if ( creepMemory.stucktimer <= 30 || !creepMemory.stucktimer) { 
+              if (creepMemory.stucktimer) { 
+                creepMemory.stucktimer += 1
+              } else {creepMemory.stucktimer = 1}
+            } else {
+              let result = Pathfinder.search(creep.pos, target.pos, { flee: true })
+              self.moveTo(result.path[0])
+              delete creepMemory['stucktimer']
+              creepMemory.target = undefined
+            }  
+          }
           if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
             creepMemory.task = 'repairing'
             creepMemory.target = undefined
