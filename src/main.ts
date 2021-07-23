@@ -90,7 +90,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     
     let towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } })
     _.each(towers, (tower: StructureTower) => {
-      let enemies = room.find(FIND_HOSTILE_CREEPS)
+      let enemies = _.filter(room.find(FIND_HOSTILE_CREEPS), (creep:any) => creep.owner.username != "toovsTV")
       if (enemies.length > 0) {
         tower.attack(enemies[0])
       }

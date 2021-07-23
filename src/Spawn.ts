@@ -42,24 +42,34 @@ export default class Spawn extends ScreepObject {
       let transportAvailable = harvesters.length > 0 && spawnTransporters.length > 0 // If there is higher energy capacity available, use this to wait for the transporters.
 
       if (harvesters.length < sources.length + minerals.length) {  // Single harvester per source
+        console.log('spawnHarvester')
         this.spawnHarvester(transportAvailable)
       } else if (spawnTransporters.length < 1) {                   // Single spawn / extension transporter
+        console.log('spawnTransporters')
         this.spawnExtensionTransporter(transportAvailable)
       } else if (transporters.length < 1) {                        // Single transporter for all other structures
+        console.log('transporter')
         this.spawnTransporter(transportAvailable)
       } else if (constructors.length < 1) {                        // Single constructor
+        console.log('constructor')
         this.spawnConstructor(transportAvailable)
       } else if (upgraders.length < 3) {                           // Single upgrader
+        console.log('upgraders, 3')
         this.spawnUpgrader(transportAvailable)
       } else if (maintainers.length < 1) {                         // Single maintainer
+        console.log('maintainer')
         this.spawnMaintainer(transportAvailable)
       } else if (repairers.length < 1) {                           // Single repairer
+        console.log('repairer')
         this.spawnRepairer(transportAvailable)
       } else if (targets.length > 0) {                             // Spawn attackers
+        console.log('attackers')
         this.spawnAttacker(transportAvailable)
       } else if (claimers.length < unclaimed.length) {             // Single claimer per controller
+        console.log('claimers')
         this.spawnClaimer(transportAvailable)
       } else if (reservers.length < unreserved.length) {           // Single reserver per controller
+        console.log('reservers')
         this.spawnReserver(transportAvailable)
       }
     }
@@ -68,7 +78,9 @@ export default class Spawn extends ScreepObject {
   spawnCreep(body: BodyPartConstant[], attrs: any): void {
     let memory = this.memory
     let name = attrs.role + '-' + Game.time.toString()
-    if (this.spawn.spawnCreep(body, name) == OK) {
+    let result = this.spawn.spawnCreep(body, name)
+    console.log(result)
+    if (result == OK) {
       memory['creeps'][name] = attrs
     }
   }

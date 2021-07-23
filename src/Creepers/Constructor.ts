@@ -26,7 +26,7 @@ export default class Constructor extends Creeper {
                 creepMemory.stucktimer += 1
               } else {creepMemory.stucktimer = 1}
             } else {
-              let result = Pathfinder.search(creep.pos, target.pos, { flee: true })
+              let result = PathFinder.search(creep.pos, target.pos, { flee: true })
               self.moveTo(result.path[0])
               delete creepMemory['stucktimer']
               creepMemory.target = undefined
